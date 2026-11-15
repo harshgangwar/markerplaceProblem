@@ -32,11 +32,13 @@ public final class CommandDispatcher {
         } catch (Exception e) { return one("Error - invalid command"); }
     }
     private List<String> one(String s) { return Collections.singletonList(s); }
+
     private SortField parseField(String s) {
         if ("sort_price".equals(s)) return SortField.PRICE;
         if ("sort_time".equals(s)) return SortField.TIME;
         throw new IllegalArgumentException();
     }
+
     private SortOrder parseOrder(String s) {
         if ("asc".equals(s)) return SortOrder.ASC;
         if ("dsc".equals(s)) return SortOrder.DESC;

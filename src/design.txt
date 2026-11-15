@@ -1,0 +1,97 @@
+For GET_TOP_CATEGORY, I deliberately do not scan every listing on every request. Instead, every create/delete updates a category counter:
+CREATE_LISTING
+│
+▼
+Save Listing ─────► Increment Category Count
+
+DELETE_LISTING
+│
+▼
+Remove Listing ───► Decrement Category Count
+
+GET_TOP_CATEGORY
+│
+▼
+Read Category Statistics
+
+This is a pre-computed/read-optimized aggregate.
+
+
+
+CREATE LISTING FLOW:
+
+CREATE_LISTING
+        │
+        ▼
+Validate User
+        │
+        ├── Not found → Error - unknown user
+        │
+        ▼
+Generate Listing ID
+        │
+        ▼
+Create Listing Object
+        │
+        ▼
+Save Listing
+        │
+        ▼
+Increment Category Count
+        │
+        ▼
+Return Listing ID
+
+
+DELETE LISTING FLOW:
+DELETE_LISTING
+       │
+       ▼
+Find Listing
+       │
+       ├── Not found
+       │       ↓
+       │ Error - listing does not exist
+       │
+       ▼
+Check Owner
+       │
+       ├── Different owner
+       │       ↓
+       │ Error - listing owner mismatch
+       │
+       ▼
+Delete Listing
+       │
+       ▼
+Decrease Category Count
+       │
+       ▼
+Success
+
+
+GET LISTING FLOW:
+
+GET_LISTING
+      │
+      ▼
+Validate requesting User
+      │
+      ├── Unknown
+      │     ↓
+      │ Error - unknown user
+      │
+      ▼
+Find Listing
+      │
+      ├── Missing
+      │     ↓
+      │ Error - not found
+      │
+      ▼
+Format Response
+
+
+
+
+
