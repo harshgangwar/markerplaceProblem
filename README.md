@@ -18,3 +18,11 @@ Architecture:
 - util: parsing and formatting helpers
 
 No external libraries are used. Java 8 compatible.
+
+
+### Run Tests
+
+Execute all unit and concurrency tests:
+
+```bash
+./test.sh
