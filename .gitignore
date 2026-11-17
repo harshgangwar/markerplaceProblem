@@ -9,4 +9,4 @@ build/
 *.iml
 
 # macOS
-.DS_Store
+.DS_Storeout/
