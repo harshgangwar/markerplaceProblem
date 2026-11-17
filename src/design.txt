@@ -93,5 +93,68 @@ Format Response
 
 
 
+CONCURRENCY MECHANISMS USED
+
+1. UserRepository
+   Mechanism: ConcurrentHashMap
+   Purpose: Thread-safe user storage and concurrent access.
+
+2. ListingRepository
+   Mechanism: ConcurrentHashMap
+   Purpose: Thread-safe listing storage and concurrent access.
+
+3. Category Index
+   Mechanism: ConcurrentHashMap + Concurrent Set
+   Purpose: Thread-safe category-based indexing of listing IDs.
+
+4. Category Statistics
+   Mechanism: AtomicInteger
+   Purpose: Atomic increment and decrement of category listing counts.
+   Prevents lost updates when multiple threads modify the same counter.
+
+5. ID Generation
+   Mechanism: AtomicLong
+   Purpose: Generates unique listing IDs across concurrent threads.
+
+6. Domain Objects
+   Mechanism: Immutability (final fields, no setters)
+   Purpose:
+   - Prevents accidental modification of object state.
+   - Makes concurrent access easier to reason about.
+   - Ensures objects remain consistent after creation.
+
+
+IMPORTANT CONCURRENCY NOTE:
+
+Thread-safe individual data structures do not guarantee atomicity across multiple operations.
+
+For example, CREATE_LISTING involves:
+   1. Saving the listing in ListingRepository.
+   2. Incrementing the category count in CategoryStatsRepository.
+
+If the first operation succeeds but the second fails, data becomes inconsistent.
+
+Similarly, DELETE_LISTING involves:
+   1. Finding the listing.
+   2. Validating ownership.
+   3. Deleting the listing.
+   4. Decrementing the category count.
+
+These operations need coordinated synchronization.
+
+Possible solution:
+   - Use ReentrantReadWriteLock for compound in-memory operations.
+   - Use database transactions in a persistent implementation.
+   - Ensure ownership validation and deletion happen atomically.
+
+KEY TAKEAWAY:
+
+ConcurrentHashMap provides thread-safe map operations.
+AtomicInteger provides atomic counter updates.
+AtomicLong provides atomic ID generation.
+Immutability prevents unintended state modifications.
+
+However, compound business operations require additional synchronization
+to maintain consistency across multiple data structures.
 
 
